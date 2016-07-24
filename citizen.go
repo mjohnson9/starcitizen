@@ -10,7 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// Citizen represents a UEE citizen profile
+// Citizen represents an RSI citizen profile
 type Citizen struct {
 	UEENumber int64
 	Handle    string
@@ -21,13 +21,14 @@ type Citizen struct {
 
 var rsiBaseURL = &url.URL{Scheme: "https", Host: "robertsspaceindustries.com"}
 
-// Retrieve gets an RSI citizen's profile
-func Retrieve(profileHandle string) (*Citizen, error) {
+// RetrieveCitizen gets an RSI citizen's profile from the robertsspaceindustries.com
+// website.
+func RetrieveCitizen(client *http.Client, profileHandle string) (*Citizen, error) {
 	const profileURLFormat = "https://robertsspaceindustries.com/citizens/%s"
 
 	profileURL := fmt.Sprintf(profileURLFormat, profileHandle)
 
-	resp, err := http.Get(profileURL)
+	resp, err := client.Get(profileURL)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,7 @@ func Retrieve(profileHandle string) (*Citizen, error) {
 		return nil, ErrSpideringFailed
 	}
 
-	citizen.Organizations, err = getOrgMemberships(profileHandle)
+	citizen.Organizations, err = getOrgMemberships(client, profileHandle)
 	if err != nil {
 		return nil, err
 	}

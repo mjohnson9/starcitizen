@@ -19,12 +19,12 @@ type OrgMembership struct {
 	Main bool
 }
 
-func getOrgMemberships(profileHandle string) ([]*OrgMembership, error) {
+func getOrgMemberships(client *http.Client, profileHandle string) ([]*OrgMembership, error) {
 	const profileURLFormat = "https://robertsspaceindustries.com/citizens/%s/organizations"
 
 	profileURL := fmt.Sprintf(profileURLFormat, profileHandle)
 
-	resp, err := http.Get(profileURL)
+	resp, err := client.Get(profileURL)
 	if err != nil {
 		return nil, err
 	}
