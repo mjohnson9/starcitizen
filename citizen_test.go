@@ -1,6 +1,9 @@
 package starcitizen
 
-import "testing"
+import (
+	"net/http"
+	"testing"
+)
 
 var citizenTests = []struct {
 	Handle          string
@@ -19,16 +22,9 @@ func TestCitizenRetrieves(t *testing.T) {
 	}
 
 	for _, test := range citizenTests {
-		t.Logf("Retrieving citizen: %s", test.Handle)
-
-		profile, err := Retrieve(test.Handle)
+		profile, err := RetrieveCitizen(http.DefaultClient, test.Handle)
 		if err != nil {
 			t.Fatal(err)
-		}
-
-		t.Logf("%#v", profile)
-		for _, org := range profile.Organizations {
-			t.Logf("\t%#v", org)
 		}
 
 		if profile.UEENumber != test.ExpectedCitizen.UEENumber {
@@ -43,4 +39,19 @@ func TestCitizenRetrieves(t *testing.T) {
 			t.Errorf("Moniker doesn't match: expected %q, got %q", test.ExpectedCitizen.Moniker, profile.Moniker)
 		}
 	}
+}
+
+func TestCitizenMissing(t *testing.T) {
+	if testing.Short() {
+		t.Skip("not running in short mode")
+	}
+
+	_, err := RetrieveCitizen(http.DefaultClient, "aishdf98ahysdf")
+	if err == ErrMissing {
+		return
+	} else if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Fatal("should not have gotten here")
 }

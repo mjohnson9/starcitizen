@@ -12,6 +12,10 @@ import (
 // in the format of an HTML page.
 var ErrSpideringFailed = errors.New("document spidering failed, probably due to a change in document format")
 
+// ErrMissing is returned whenever a citizen or organization does not exist by
+// the given handle.
+var ErrMissing = errors.New("does not exist")
+
 func getEntryValue(el *goquery.Selection, label string) (string, bool) {
 	value := ""
 	found := false

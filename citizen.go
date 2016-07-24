@@ -33,6 +33,10 @@ func RetrieveCitizen(client *http.Client, profileHandle string) (*Citizen, error
 		return nil, err
 	}
 
+	if resp.StatusCode == 404 {
+		return nil, ErrMissing
+	}
+
 	document, err := goquery.NewDocumentFromResponse(resp)
 	if err != nil {
 		return nil, err
